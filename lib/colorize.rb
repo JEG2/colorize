@@ -93,11 +93,11 @@ class String
       color_parameters[:color] = COLORS[params]
     end
     
-    color_parameters[:color] ||= @color || 9
-    color_parameters[:background] ||= @background || 9
-    color_parameters[:mode] ||= @mode || 0
+    color_parameters[:color]      ||= (defined?(@color) && @color) || 9
+    color_parameters[:background] ||= (defined?(@background) && @background) || 9
+    color_parameters[:mode]       ||= (defined?(@mode) && @mode) || 0
 
-    color_parameters[:uncolorized] ||= @uncolorized || self.dup
+    color_parameters[:uncolorized] ||= (defined?(@uncolorized) && @uncolorized) || self.dup
    
     # calculate bright mode
     color_parameters[:color] += 50 if color_parameters[:color] > 10
@@ -127,8 +127,10 @@ class String
   #
   COLORS.each_key do | key |
     eval <<-"end_eval"
-      def #{key.to_s}
-        return self.colorize( :color => :#{key.to_s} )
+      unless :#{key} == :default
+        def #{key.to_s}
+          return self.colorize( :color => :#{key.to_s} )
+        end
       end
       def on_#{key.to_s}
         return self.colorize( :background => :#{key.to_s} )
